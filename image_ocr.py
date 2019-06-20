@@ -14,10 +14,9 @@
 
 import cv2
 import  os
+import json
 from PIL import Image
-# from pytesseract import image_to_string
 import pytesseract
-
 
 #---------------------------------------------------------
 # get image abs path
@@ -34,6 +33,34 @@ def get_image_path_from_file(file_path):
             image_abs_path.append(os.path.abspath(child))  # get abspath of each image
     return image_abs_path
 
+#---------------------------------------------------------
+# get text lable from annotations.txt
+#---------------------------------------------------------
+
+# KJDZ0005 检测字段
+test_field_0005 = ["IssueDate", "TotalAmount", "InvoiceNO", "InvoiceCode"]
+# KJDZ0004 检测字段
+test_field_0004 = ["IssueDate", "TotalAmountCap", "InvoiceNO", "InvoiceCode"]
+
+# 输入：annotation.txt、 test_field
+# 输出： 真实label列表
+def get_anno_label(anno_file, test_field = test_field_0005):
+    words = []
+    with open(anno_file, 'r') as f:
+        data = json.load(f)
+        contents = data['templateFields']
+        for i in range(len(contents)):  # 处理同一张图片下的所有标注字段
+            # 若 label 标注里不含['content']字段
+            try:  # title 字段不是每个都有,比如/KJDZ0005/annotations/1527143843_38_102.txt
+                content = contents[i]['content']
+            except:
+                # print(str(an_file))
+                pass
+            templateFieldNo = contents[i]['templateFieldNo']  # label
+            if templateFieldNo in test_field:
+                word = content["word"]
+                words.append(word)
+    return words
 
 
 if __name__ == "__main__":
