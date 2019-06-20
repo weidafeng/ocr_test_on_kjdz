@@ -44,7 +44,6 @@ def segment_an_image(image_path, bounding_box, index):
     shape = image.shape  # (height, width, channel)->(50, 220, 3)
     height, width = shape[0], shape[1]
     x_begin, x_end, y_begin, y_end =  bounding_box[1], bounding_box[1] + bounding_box[3], bounding_box[0], bounding_box[0]+ bounding_box[2]
-    print(x_begin, x_end)
     cv2.imwrite(image_path+"_{}.png".format(str(index)), image[x_begin: x_end, y_begin: y_end])# 高度、宽度各截一半
     return [x_begin, x_end, y_begin, y_end]
 
