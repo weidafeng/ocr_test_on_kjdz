@@ -11,7 +11,7 @@ import cv2
 import json
 
 #---------------------------------------------------------
-# get image abs path
+# get image abs path(list)
 #---------------------------------------------------------
 
 ## get abspath of each image in a folder
@@ -21,7 +21,7 @@ def get_image_path_from_file(file_path):
     anno_abs_path = []
     for dir in sub_path:
         child = os.path.join(file_path, dir)
-        if os.path.isfile(child) and child.endswith(("jpg","png","jpeg")):  # an image
+        if os.path.isfile(child) and child.endswith("jpg"):  # an image
             image_abs_path.append(os.path.abspath(child))  # get abspath of each image
         elif os.path.isfile(child) and child.endswith("txt"):  # an annotation txt file
             anno_abs_path.append(os.path.abspath(child))  # get abspath of each annotation
@@ -41,10 +41,14 @@ def get_image_path_from_file(file_path):
 #       保存截取的图片
 def segment_an_image(image_path, bounding_box, index):
     image = cv2.imread(image_path)
-    shape = image.shape  # (height, width, channel)->(50, 220, 3)
-    height, width = shape[0], shape[1]
+    # shape = image.shape  # (height, width, channel)->(50, 220, 3)
+    # height, width = shape[0], shape[1]
     x_begin, x_end, y_begin, y_end =  bounding_box[1], bounding_box[1] + bounding_box[3], bounding_box[0], bounding_box[0]+ bounding_box[2]
-    cv2.imwrite(image_path+"_{}.png".format(str(index)), image[x_begin: x_end, y_begin: y_end])# 高度、宽度各截一半
+    # 获取文件名
+    filepath, filename_with_suffix = os.path.split(image_path)
+    filename, extension = os.path.splitext(filename_with_suffix)
+
+    cv2.imwrite(filename+"_{}.png".format(str(index)), image[x_begin: x_end, y_begin: y_end])# 高度、宽度各截一半
     return [x_begin, x_end, y_begin, y_end]
 
 #---------------------------------------------------------
