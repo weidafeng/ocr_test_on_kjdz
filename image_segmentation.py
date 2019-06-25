@@ -10,6 +10,11 @@ import os
 import cv2
 import json
 
+# KJDZ0005 检测字段
+test_field_0005 = ["IssueDate", "TotalAmount", "InvoiceNO", "InvoiceCode"]
+# KJDZ0004 检测字段
+test_field_0004 = ["IssueDate", "TotalAmountCap", "InvoiceNO", "InvoiceCode"]
+
 #---------------------------------------------------------
 # get image abs path(list)
 #---------------------------------------------------------
@@ -64,11 +69,11 @@ def get_info(content):
     left = int(content['left'])
     top = int(content['top'])
     # word = content['word'] # 不考虑
-    segmentation = [left, top, left + width, top, left + width, top + height, left, top + height] # 浮点形式
+    # segmentation = [left, top, left + width, top, left + width, top + height, left, top + height] # 浮点形式
     # return [left, top, width, height], [segmentation] # bounding-box信息， coco格式： x,y,w,h）；segmentation为[[1,2,3,4,5,6，7,8]]格式
     return [left, top, width, height]
 
-def get_bounding_box(anno_file):
+def get_bounding_box(anno_file,test_field=test_field_0005):
     bounding_boxs = []
     with open(anno_file, 'r') as f:
         data = json.load(f)
@@ -81,21 +86,20 @@ def get_bounding_box(anno_file):
             except:
                 # print(str(an_file))
                 pass
-            # templateFieldNo = contents[i]['templateFieldNo']  # label
-            # templateFieldName = contents[i]['templateFieldName'] # label-name，不考虑
-            bounding_box = get_info(content) # [left,top, width, height] # bounding-box信息， coco格式： x,y,w,h）
-            bounding_boxs.append(bounding_box)
-            # print(bounding_box)
+
+            templateFieldNo = contents[i]['templateFieldNo']  # label
+            if templateFieldNo in test_field:
+                bounding_box = get_info(content) # [left,top, width, height] # bounding-box信息， coco格式： x,y,w,h）
+                bounding_boxs.append(bounding_box)
+                # print(bounding_box)
     return bounding_boxs
 
 if __name__=="__main__":
     images, annotations = get_image_path_from_file("./")
     # print(images,annotations)
-
     for image, anno in zip(images, annotations):
         print(image, anno)
-
-        bounding_boxs = get_bounding_box(anno)
+        bounding_boxs = get_bounding_box(anno,test_field=test_field_0004)  # 可修改此处
         # print(bounding_boxs)
         for index, bbox in enumerate(bounding_boxs):
             segment_an_image(image, bbox, index)

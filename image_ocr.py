@@ -15,9 +15,12 @@
 import cv2
 import os
 import json
-from PIL import Image
 import pytesseract
 
+# KJDZ0005 检测字段
+test_field_0005 = ["IssueDate", "TotalAmount", "InvoiceNO", "InvoiceCode"]
+# KJDZ0004 检测字段
+test_field_0004 = ["IssueDate", "TotalAmountCap", "InvoiceNO", "InvoiceCode"]
 
 # ---------------------------------------------------------
 # get image abs path
@@ -32,19 +35,13 @@ def get_image_path_from_file(file_path):
         child = os.path.join(file_path, dir)
         if os.path.isfile(child) and child.endswith("png"):  # an image
             image_abs_path.append(os.path.abspath(child))  # get abspath of each image
-        elif os.path.isfile(child) and child.endswith("txt"):  # an image
-            anno_abs_path.append(os.path.abspath(child))  # get abspath of each image
+        elif os.path.isfile(child) and child.endswith("txt"):
+            anno_abs_path.append(os.path.abspath(child))
     return image_abs_path, anno_abs_path
 
 # ---------------------------------------------------------
 # get text lable from annotations.txt
 # ---------------------------------------------------------
-
-# KJDZ0005 检测字段
-test_field_0005 = ["IssueDate", "TotalAmount", "InvoiceNO", "InvoiceCode"]
-# KJDZ0004 检测字段
-test_field_0004 = ["IssueDate", "TotalAmountCap", "InvoiceNO", "InvoiceCode"]
-
 
 # 输入：annotation.txt、 test_field
 # 输出： 真实label列表
@@ -111,7 +108,7 @@ if __name__ == "__main__":
         # print(images_i_png)
         for image in images_i_png:
 
-            ocr_results = prepropress_and_ocr(image, show=True)
+            ocr_results = prepropress_and_ocr(image, show=True, lang="chi_tra")
             if ocr_results in labels:
                 right_result += 1
 
